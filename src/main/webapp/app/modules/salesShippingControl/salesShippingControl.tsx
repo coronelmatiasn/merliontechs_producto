@@ -11,6 +11,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
+import { State } from 'app/shared/model/enumerations/state.model';
+
 import { getEntities } from '../../entities/sales/sales.reducer';
 
 const useStyles = makeStyles({
@@ -47,6 +49,7 @@ export const SalesShippingControl = (props: ISalesShippingControlProps) => {
                             {sale.id}
                         </TableCell>
                         <TableCell align="left">{sale.product.name}</TableCell>
+                        <TableCell align="left">{sale.state}</TableCell>
                         <TableCell align="left">
                             <Button variant="contained" color="primary">
                                 Enviar
@@ -61,7 +64,7 @@ export const SalesShippingControl = (props: ISalesShippingControlProps) => {
 }
 
 const mapStateToProps = ({ sales }) => ({
-    salesList: sales.entities,
+    salesList: sales.entities.filter(sale => sale.state === State.SHIPPED),
     loading: sales.loading
 });
 
