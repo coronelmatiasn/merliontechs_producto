@@ -86,7 +86,6 @@ export default function SalesShippingControlNavigation() {
             <TabPanel value={value} index={2}>
                 <SalesShippingControl {...navigationProps} />
             </TabPanel>
-            <span>{ value }</span>
         </div>
     );
 }

@@ -11,7 +11,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-import { getEntities } from '../../entities/sales/sales.reducer';
+import { getEntities, updateEntity } from '../../entities/sales/sales.reducer';
 import { State } from 'app/shared/model/enumerations/state.model';
 
 const useStyles = makeStyles({
@@ -25,11 +25,31 @@ export const SalesShippingControl = (props) => {
         props.getEntities();
     }, []);
 
-    const { salesList, salesState } = props;
+    const { salesState } = props;
+    let { salesList } = props;
+
+    let filteredList = salesList.filter(sale => sale.state === salesState);
+
+    const handleClick = async (index, e) => {
+        e.preventDefault();
+        
+        const entity = filteredList[index];
+
+        if (entity.state === State.IN_CHARGE) {
+            entity.state = State.SHIPPED;
+        } else if (entity.state === State.SHIPPED) {
+            entity.state = State.DELIVERED
+        }
+
+        await props.updateEntity(entity);
+        props.getEntities();
+
+        salesList = props.salesList;
+
+        filteredList = salesList.filter(sale => sale.state === salesState);
+    }
 
     const classes = useStyles();
-
-    const filteredList = salesList.filter(sale => sale.state === salesState);
 
     return (
         <TableContainer component={Paper}>
@@ -39,21 +59,33 @@ export const SalesShippingControl = (props) => {
                     <TableCell>Nro</TableCell>
                     <TableCell align="left">Producto</TableCell>
                     <TableCell align="left">Estado</TableCell>
+                    {salesState !== State.DELIVERED && 
+                        <TableCell align="left">
+                        </TableCell>
+                    }
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                {filteredList.map((sale) => (
+                {salesList
+                    .filter(sale => sale.state === salesState)
+                    .map((sale, index) => (
                     <TableRow key={sale.id}>
                         <TableCell component="th" scope="row">
                             {sale.id}
                         </TableCell>
                         <TableCell align="left">{sale.product.name}</TableCell>
                         <TableCell align="left">{sale.state}</TableCell>
-                        <TableCell align="left">
-                            <Button variant="contained" color="primary">
-                                Enviar
-                            </Button>
-                        </TableCell>
+                        {salesState !== State.DELIVERED && 
+                            <TableCell align="left">
+                                <Button 
+                                    variant="contained" 
+                                    color="primary" 
+                                    onClick={(e) => handleClick(index, e)}
+                                >
+                                    Enviar
+                                </Button>
+                            </TableCell>
+                        }
                     </TableRow>
                 ))}
                 </TableBody>
@@ -68,7 +100,8 @@ const mapStateToProps = ({ sales }) => ({
 });
 
 const mapDispatchToProps = {
-    getEntities
+    getEntities,
+    updateEntity
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SalesShippingControl);
