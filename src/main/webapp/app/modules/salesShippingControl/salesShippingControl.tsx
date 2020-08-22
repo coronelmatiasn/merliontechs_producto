@@ -11,9 +11,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-import { State } from 'app/shared/model/enumerations/state.model';
-
 import { getEntities } from '../../entities/sales/sales.reducer';
+import { State } from 'app/shared/model/enumerations/state.model';
 
 const useStyles = makeStyles({
     table: {
@@ -21,16 +20,16 @@ const useStyles = makeStyles({
     },
 });
 
-export interface ISalesShippingControlProps extends StateProps, DispatchProps {}
-
-export const SalesShippingControl = (props: ISalesShippingControlProps) => {
+export const SalesShippingControl = (props) => {
     useEffect(() => {
         props.getEntities();
     }, []);
 
-    const { salesList } = props;
+    const { salesList, salesState } = props;
 
     const classes = useStyles();
+
+    const filteredList = salesList.filter(sale => sale.state === salesState);
 
     return (
         <TableContainer component={Paper}>
@@ -39,11 +38,11 @@ export const SalesShippingControl = (props: ISalesShippingControlProps) => {
                 <TableRow>
                     <TableCell>Nro</TableCell>
                     <TableCell align="left">Producto</TableCell>
-                    <TableCell align="left"></TableCell>
+                    <TableCell align="left">Estado</TableCell>
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                {salesList.map((sale) => (
+                {filteredList.map((sale) => (
                     <TableRow key={sale.id}>
                         <TableCell component="th" scope="row">
                             {sale.id}
@@ -64,15 +63,12 @@ export const SalesShippingControl = (props: ISalesShippingControlProps) => {
 }
 
 const mapStateToProps = ({ sales }) => ({
-    salesList: sales.entities.filter(sale => sale.state === State.SHIPPED),
+    salesList: sales.entities,
     loading: sales.loading
 });
 
 const mapDispatchToProps = {
     getEntities
 }
-
-type StateProps = ReturnType<typeof mapStateToProps>;
-type DispatchProps = typeof mapDispatchToProps;
 
 export default connect(mapStateToProps, mapDispatchToProps)(SalesShippingControl);

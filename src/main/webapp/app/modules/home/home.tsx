@@ -6,7 +6,7 @@ import { Translate } from 'react-jhipster';
 import { connect } from 'react-redux';
 import { Row, Col, Alert } from 'reactstrap';
 
-import SalesShippingControl from '../salesShippingControl/salesShippingControl';
+import SalesShippingControlNavigation from '../salesShippingControl/salesShippingControl-navigation';
 
 import { IRootState } from 'app/shared/reducers';
 
@@ -20,7 +20,7 @@ export const Home = (props: IHomeProp) => {
       <Col md="9">
         {account && account.login ? (
           <div>
-            <SalesShippingControl />
+            <SalesShippingControlNavigation />
           </div>
         ) : (
           <div>
